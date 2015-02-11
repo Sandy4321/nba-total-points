@@ -87,6 +87,13 @@ def scrape(team):
  values["pf"] = round(float(sum(points_for) / len(points_for)),2)
  values["recent"] = round(float(sum(points_for[-5:])/len(points_for[-5:])),2)
  values["pa"] = round(float(sum(points_against) / len(points_against)),2)
+ values["last_5"] = points_for[-5:]
+
+ values["last_7"] = points_for[-7:]
+ values["last_7"].sort()
+ values["last_7"].pop(0)
+ values["last_7"].pop(len(values["last_7"]) - 1)
+ values["last_7_recent"] = round(float(sum(values["last_7"])/len(values["last_7"])),2)
 
  return values
 
@@ -102,9 +109,22 @@ home_values = scrape(args["home"])
 away_total = round(float((away_values["pf"] + away_values["recent"] + home_values["pa"]) / 3), 2)
 home_total = round(float((home_values["pf"] + home_values["recent"] + away_values["pa"]) / 3), 2)
 
-print "%s: %.2f" % (away_values["team"], away_total)
-print "%s: %.2f" % (home_values["team"], home_total)
+away_last7_total = round(float((away_values["pf"] + away_values["last_7_recent"] + home_values["pa"]) / 3), 2)
+home_last7_total = round(float((home_values["pf"] + home_values["last_7_recent"] + away_values["pa"]) / 3), 2)
+
+
+print "\n--- LAST 5 ---\n"
+
+print "%s: %.2f -- %s" % (away_values["team"], away_total, away_values["last_5"])
+print "%s: %.2f -- %s" % (home_values["team"], home_total, home_values["last_5"])
 print "TOT: %.2f" % (away_total + home_total)
+
+print "\n--- LAST 7 (drop high/low) ---\n"
+
+print "%s: %.2f -- %s" % (away_values["team"], away_last7_total, away_values["last_7"])
+print "%s: %.2f -- %s" % (home_values["team"], home_last7_total, home_values["last_7"])
+print "TOT: %.2f" % (away_last7_total + home_last7_total)
+
 
 #print away_values
 #print home_values
